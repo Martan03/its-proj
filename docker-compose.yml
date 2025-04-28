@@ -1,7 +1,7 @@
 services:
 
   easyapointments:
-    image: docker.io/asmrcka/its2025app:1
+    image: docker.io/asmrcka/its2025app:2
     restart: always
     ports:
       - '8080:80'

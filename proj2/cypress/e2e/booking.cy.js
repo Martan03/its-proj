@@ -1,3 +1,11 @@
+function navToCustomerInfo() {
+    cy.visit('http://localhost:8080/');
+    cy.wait(500);
+
+    cy.get('#available-hours > :nth-child(1)').click();
+    cy.get('#button-next-2').should('be.visible').click();
+}
+
 function fillRequired() {
     cy.get('#first-name').type("Kačenka");
     cy.get('#last-name').type("Fitová");
@@ -7,11 +15,7 @@ function fillRequired() {
 
 describe('Booking an appointment', () => {
     it('Successful booking (1)', () => {
-        cy.visit('http://localhost:8080/');
-
-        cy.get('#available-hours > :nth-child(1)').click();
-        cy.get('#button-next-2').should('be.visible').click();
-
+        navToCustomerInfo();
         fillRequired();
 
         cy.get('#address').type("Božetěchova");
@@ -27,11 +31,7 @@ describe('Booking an appointment', () => {
     it(
         'Successful customer information fill-in without filling optional (2)',
         () => {
-            cy.visit('http://localhost:8080/');
-
-            cy.get('#available-hours > :nth-child(1)').click();
-            cy.get('#button-next-2').should('be.visible').click();
-
+            navToCustomerInfo();
             fillRequired();
 
             cy.get('#button-next-3').click();
@@ -41,10 +41,7 @@ describe('Booking an appointment', () => {
     );
 
     it('Required fields highlighted (3)', () => {
-        cy.visit('http://localhost:8080/');
-
-        cy.get('#available-hours > :nth-child(1)').click();
-        cy.get('#button-next-2').should('be.visible').click();
+        navToCustomerInfo();
 
         cy.get('#button-next-3').click();
 
@@ -55,10 +52,7 @@ describe('Booking an appointment', () => {
     });
 
     it('Filled data is too long (4)', () => {
-        cy.visit('http://localhost:8080/');
-
-        cy.get('#available-hours > :nth-child(1)').click();
-        cy.get('#button-next-2').should('be.visible').click();
+        navToCustomerInfo();
 
         const a = 'a'.repeat(256);
         cy.get('#first-name').type(a);
@@ -76,12 +70,46 @@ describe('Booking an appointment', () => {
 
     it('Going back to date and time booking page (5)', () => {
         cy.visit('http://localhost:8080/');
+        cy.wait(500);
 
         cy.get('.flatpickr-day:not(.flatpickr-disabled)').eq(1).click();
         cy.get('#available-hours > :nth-child(2)').click();
 
         cy.get('#button-next-2').should('be.visible').click();
         cy.get('#button-back-3').should('be.visible').click();
+
+        cy.get('.flatpickr-day:not(.flatpickr-disabled)').eq(1)
+            .should('have.class', 'selected');
+        cy.get('#available-hours > :nth-child(2)')
+            .should('have.class', 'selected-hour');
+    });
+
+    it('Going back to customer information page (6)', () => {
+        navToCustomerInfo();
+        fillRequired();
+
+        cy.get('#button-next-3').click();
+        cy.get('#button-back-4').should('be.visible').click();
+
+        cy.get('#first-name').should('have.value', 'Kačenka');
+        cy.get('#last-name').should('have.value', 'Fitová');
+        cy.get('#email').should('have.value', 'kacenka@fit.cz');
+        cy.get('#phone-number').should('have.value', '123456789');
+    });
+
+    it('Changing the language (7)', () => {
+        cy.visit('http://localhost:8080/');
+        cy.wait(500);
+
+        cy.get('.flatpickr-day:not(.flatpickr-disabled)').eq(1).click();
+        cy.get('#available-hours > :nth-child(2)').click();
+
+        cy.get('#select-language').click();
+        cy.get('[data-language="czech"]').should('be.visible').click();
+
+        cy.get('#wizard-frame-2 > .frame-container > .frame-title')
+            .contains('Výběr data a času schůzky');
+
 
         cy.get('.flatpickr-day:not(.flatpickr-disabled)').eq(1)
             .should('have.class', 'selected');
