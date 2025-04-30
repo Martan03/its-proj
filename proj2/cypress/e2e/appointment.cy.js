@@ -1,11 +1,8 @@
-function mockGetCalendarAppointments() {
-    cy.fixture('calendar_appointments').then(data => {
-
-        cy.intercept('POST', '/index.php/calendar/get_calendar_appointments', {
-            statusCode: 200,
-            body: data,
-        }).as('getAppointments');
-    });
+function mockGetCalendarAppointments(data, name = 'getAppointments') {
+    cy.intercept('POST', '/index.php/calendar/get_calendar_appointments', {
+        statusCode: 200,
+        body: data,
+    }).as(name);
 }
 
 function mockPostRequest(url, name) {
@@ -20,7 +17,9 @@ function appointmentDetails() {
 }
 
 describe('Managing appointments', () => {
-    beforeEach(mockGetCalendarAppointments);
+    beforeEach(() => {
+        cy.fixture('calendar_appointments').then(mockGetCalendarAppointments);
+    });
 
     it('Appointment details (8)', () => {
         cy.loginAsAdmin();
@@ -74,14 +73,25 @@ describe('Managing appointments', () => {
 
         cy.loginAsAdmin();
         cy.wait('@getAppointments');
+
+        cy.fixture('calendar_appointments').then(data => {
+            data.appointments[0].color = '#82e4ec';
+            data.appointments[0].email = 'xlogin00@fit.vutbr.cz';
+            mockGetCalendarAppointments(data, 'getAppointmentsUpdated');
+        });
+
         appointmentDetails();
         cy.get('.edit-popover').click();
 
         cy.get('[data-value="#82e4ec"]').click();
-        cy.get('#email').clear().type('xfitov00@fit.vutbr.cz');
-
+        cy.get('#email').clear().type('xlogin00@fit.vutbr.cz');
         cy.get('#save-appointment').click();
         cy.wait('@saveAppointment');
+
+        cy.wait('@getAppointmentsUpdated');
+        cy.get('.fc-timegrid-event-harness > .fc-event').eq(0)
+            .should('have.css', 'background-color', 'rgb(130, 228, 236)');
+
         cy.get('.toast').should('be.visible');
         cy.get('.toast-body').contains('Appointment saved successfully');
     });
@@ -96,6 +106,7 @@ describe('Managing appointments', () => {
         cy.get('#last-name').clear();
         cy.get('#email').clear();
         cy.get('#phone-number').clear();
+        cy.get('#appointment-notes').clear().type('State retained');
 
         cy.get('#save-appointment').click();
 
@@ -103,6 +114,7 @@ describe('Managing appointments', () => {
         cy.get('#last-name').should('have.class', 'is-invalid');
         cy.get('#email').should('have.class', 'is-invalid');
         cy.get('#phone-number').should('have.class', 'is-invalid');
+        cy.get('#appointment-notes').should('have.value', 'State retained')
     });
 
     it('Closing the appointment details pop-up (13)', () => {

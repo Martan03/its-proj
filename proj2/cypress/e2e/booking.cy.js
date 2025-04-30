@@ -1,16 +1,20 @@
 function navToCustomerInfo() {
+    cy.intercept('POST', '/index.php/booking/get_available_hours')
+        .as('getAvailableHours');
     cy.visit('http://localhost:8080/');
-    cy.wait(500);
+    cy.wait('@getAvailableHours');
 
     cy.get('#available-hours > :nth-child(1)').click();
     cy.get('#button-next-2').should('be.visible').click();
 }
 
 function fillRequired() {
-    cy.get('#first-name').type("Kačenka");
-    cy.get('#last-name').type("Fitová");
-    cy.get('#email').type("kacenka@fit.cz");
-    cy.get('#phone-number').type("123456789");
+    cy.fixture('customer').then(data => {
+        cy.get('#first-name').type(data.first_name);
+        cy.get('#last-name').type(data.last_name);
+        cy.get('#email').type(data.email);
+        cy.get('#phone-number').type(data.phone_number);
+    });
 }
 
 describe('Booking an appointment', () => {
@@ -36,19 +40,21 @@ describe('Booking an appointment', () => {
 
             cy.get('#button-next-3').click();
             cy.get('#wizard-frame-4 > .frame-container > .frame-title')
-                .should('contain', 'Appointment Confirmation');
+                .contains('Appointment Confirmation');
         }
     );
 
     it('Required fields highlighted (3)', () => {
         navToCustomerInfo();
 
+        cy.get('#notes').type('Test note');
         cy.get('#button-next-3').click();
 
         cy.get('#first-name').should('have.class', 'is-invalid');
         cy.get('#last-name').should('have.class', 'is-invalid');
         cy.get('#email').should('have.class', 'is-invalid');
         cy.get('#phone-number').should('have.class', 'is-invalid');
+        cy.get('#notes').should('have.value', 'Test note');
     });
 
     it('Filled data is too long (4)', () => {
@@ -59,6 +65,7 @@ describe('Booking an appointment', () => {
         cy.get('#last-name').type(a);
         cy.get('#email').type(`${a}@gmail.com`);
         cy.get('#phone-number').type('1'.repeat(256));
+        cy.get('#notes').type('Test note');
 
         cy.get('#button-next-3').click();
 
@@ -66,17 +73,20 @@ describe('Booking an appointment', () => {
         cy.get('#last-name').should('have.class', 'is-invalid');
         cy.get('#email').should('have.class', 'is-invalid');
         cy.get('#phone-number').should('have.class', 'is-invalid');
+        cy.get('#notes').should('have.value', 'Test note');
     });
 
     it('Going back to date and time booking page (5)', () => {
         cy.visit('http://localhost:8080/');
-        cy.wait(500);
+        cy.wait(2000);
 
         cy.get('#available-hours > :last-child').click();
 
         cy.get('#button-next-2').should('be.visible').click();
         cy.get('#button-back-3').should('be.visible').click();
 
+        cy.get('#wizard-frame-2 > .frame-container > .frame-title')
+            .contains('Appointment Date & Time');
         cy.get('#available-hours > :last-child')
             .should('have.class', 'selected-hour');
     });
@@ -85,32 +95,34 @@ describe('Booking an appointment', () => {
         navToCustomerInfo();
         fillRequired();
 
-        cy.get('#button-next-3').click();
+        cy.get('#button-next-3').should('be.visible').click();
         cy.get('#button-back-4').should('be.visible').click();
 
-        cy.get('#first-name').should('have.value', 'Kačenka');
-        cy.get('#last-name').should('have.value', 'Fitová');
-        cy.get('#email').should('have.value', 'kacenka@fit.cz');
-        cy.get('#phone-number').should('have.value', '123456789');
+        cy.get('#wizard-frame-3 > .frame-container > .frame-title')
+            .contains('Customer Information');
+        cy.fixture('customer').then(data => {
+            cy.get('#first-name').should('have.value', data.first_name);
+            cy.get('#last-name').should('have.value', data.last_name);
+            cy.get('#email').should('have.value', data.email);
+            cy.get('#phone-number').should('have.value', data.phone_number);
+        });
     });
 
     it('Changing the language (7)', () => {
-        cy.visit('http://localhost:8080/');
-        cy.wait(500);
-
-        cy.get('.flatpickr-day:not(.flatpickr-disabled)').eq(1).click();
-        cy.get('#available-hours > :nth-child(2)').click();
+        navToCustomerInfo();
+        fillRequired();
 
         cy.get('#select-language').click();
         cy.get('[data-language="czech"]').should('be.visible').click();
 
         cy.get('#wizard-frame-2 > .frame-container > .frame-title')
-            .contains('Výběr data a času schůzky');
+            .contains('Zadání vašich údajů');
 
-
-        cy.get('.flatpickr-day:not(.flatpickr-disabled)').eq(1)
-            .should('have.class', 'selected');
-        cy.get('#available-hours > :nth-child(2)')
-            .should('have.class', 'selected-hour');
+        cy.fixture('customer').then(data => {
+            cy.get('#first-name').should('have.value', data.first_name);
+            cy.get('#last-name').should('have.value', data.last_name);
+            cy.get('#email').should('have.value', data.email);
+            cy.get('#phone-number').should('have.value', data.phone_number);
+        });
     });
 });

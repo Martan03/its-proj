@@ -41,8 +41,6 @@ describe('Managing customers', () => {
             success: true
         }).as('deleteCustomer');
         navToAdmin();
-
-        cy.get('.results').children().should('have.length.greaterThan', 0);
         cy.get('.customer-row.entry').eq(0).click();
 
         cy.intercept('POST', '/index.php/customers/search', {
