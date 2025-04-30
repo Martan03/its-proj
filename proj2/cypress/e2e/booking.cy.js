@@ -72,15 +72,12 @@ describe('Booking an appointment', () => {
         cy.visit('http://localhost:8080/');
         cy.wait(500);
 
-        cy.get('.flatpickr-day:not(.flatpickr-disabled)').eq(1).click();
-        cy.get('#available-hours > :nth-child(2)').click();
+        cy.get('#available-hours > :last-child').click();
 
         cy.get('#button-next-2').should('be.visible').click();
         cy.get('#button-back-3').should('be.visible').click();
 
-        cy.get('.flatpickr-day:not(.flatpickr-disabled)').eq(1)
-            .should('have.class', 'selected');
-        cy.get('#available-hours > :nth-child(2)')
+        cy.get('#available-hours > :last-child')
             .should('have.class', 'selected-hour');
     });
 

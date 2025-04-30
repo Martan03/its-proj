@@ -1,17 +1,12 @@
 function navToAdmin() {
-    cy.visit('http://localhost:8080/');
-    cy.get('.backend-link').click();
-
-    cy.get('#username').type('admin');
-    cy.get('#password').type('admin123');
-
-    cy.get('#login').click();
+    cy.loginAsAdmin();
     cy.get(':nth-child(2) > .nav-link').click();
 }
 
 describe('Managing customers', () => {
     it('Customer details (16)', () => {
-        navToAdmin();
+        cy.loginAsAdmin();
+        cy.get(':nth-child(2) > .nav-link').click();
 
         cy.get('.results').children().should('have.length.greaterThan', 0);
         cy.get('.customer-row.entry').eq(0).click();

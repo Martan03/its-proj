@@ -1,0 +1,67 @@
+{
+    "appointments": [
+        {
+            "id": 5,
+            "create_datetime": "2025-04-30 09:14:46",
+            "update_datetime": "2025-04-30 09:14:46",
+            "book_datetime": "2025-04-30 09:14:46",
+            "start_datetime": "2025-04-30 09:45:00",
+            "end_datetime": "2025-04-30 10:15:00",
+            "hash": "X7Ntloa0CAxi",
+            "color": "#7cbae8",
+            "status": "Booked",
+            "is_unavailability": false,
+            "id_users_provider": 2,
+            "id_users_customer": 8,
+            "id_services": 1,
+            "provider": {
+                "id": 2,
+                "create_datetime": "2025-03-27 07:14:47",
+                "update_datetime": "2025-03-27 07:26:20",
+                "first_name": "Jane",
+                "last_name": "Doe",
+                "email": "jane@testco.local",
+                "phone_number": "+1 (000) 000-0000",
+                "timezone": "UTC",
+                "language": "english",
+                "is_private": false,
+                "id_roles": 2,
+                "settings": {
+                    "username": "janedoe",
+                    "working_plan": "{\"sunday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"monday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"tuesday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"wednesday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"thursday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"friday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]},\"saturday\":{\"start\":\"09:00\",\"end\":\"18:00\",\"breaks\":[{\"start\":\"14:30\",\"end\":\"15:00\"}]}}",
+                    "sync_past_days": "30",
+                    "sync_future_days": "90",
+                    "calendar_view": "default"
+                },
+                "services": [
+                    1
+                ]
+            },
+            "service": {
+                "id": 1,
+                "create_datetime": "2025-03-27 07:14:47",
+                "update_datetime": "2025-03-27 07:26:46",
+                "name": "Room 42",
+                "duration": "30",
+                "color": "#7cbae8",
+                "availabilities_type": "flexible",
+                "attendants_number": 1,
+                "is_private": false
+            },
+            "customer": {
+                "id": 8,
+                "create_datetime": "2025-04-30 09:14:46",
+                "update_datetime": "2025-04-30 09:14:46",
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "johndoe@mail.its",
+                "phone_number": "314159265",
+                "timezone": "Europe/Prague",
+                "language": "english",
+                "id_roles": 3
+            }
+        }
+    ],
+    "unavailabilities": [],
+    "blocked_periods": []
+}

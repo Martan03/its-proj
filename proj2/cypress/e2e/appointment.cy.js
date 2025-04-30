@@ -1,11 +1,17 @@
-function navToAdmin() {
-    cy.visit('http://localhost:8080/');
-    cy.get('.backend-link').click();
+function mockGetCalendarAppointments() {
+    cy.fixture('calendar_appointments').then(data => {
 
-    cy.get('#username').type('admin');
-    cy.get('#password').type('admin123');
+        cy.intercept('POST', '/index.php/calendar/get_calendar_appointments', {
+            statusCode: 200,
+            body: data,
+        }).as('getAppointments');
+    });
+}
 
-    cy.get('#login').click();
+function mockPostRequest(url, name) {
+    cy.intercept('POST', `/index.php/calendar/${url}`, {
+        success: true
+    }).as(name);
 }
 
 function appointmentDetails() {
@@ -14,16 +20,28 @@ function appointmentDetails() {
 }
 
 describe('Managing appointments', () => {
-    it('Appointment details (8)', () => {
-        navToAdmin();
+    beforeEach(mockGetCalendarAppointments);
 
-        // TODO: make sure calendar is not empty
+    it('Appointment details (8)', () => {
+        cy.loginAsAdmin();
+
         appointmentDetails();
     });
 
     it('Deleting an appointment (9)', () => {
-        navToAdmin();
+        mockPostRequest('delete_appointment', 'deleteAppointment');
+
+        cy.loginAsAdmin();
+        cy.wait('@getAppointments');
         appointmentDetails();
+
+        cy.intercept('POST', '/index.php/calendar/get_calendar_appointments', {
+            body: {
+                appointments: [],
+                unavailabilities: [],
+                blocked_periods: []
+            }
+        }).as('getAppointmentsEmpty');
 
         cy.get('.delete-popover').click();
         cy.get('#message-modal').should('be.visible');
@@ -31,10 +49,14 @@ describe('Managing appointments', () => {
             '#message-modal > .modal-dialog > .modal-content' +
             '> .modal-footer > .btn-primary'
         ).click();
+        cy.wait('@deleteAppointment');
+
+        cy.wait('@getAppointmentsEmpty');
     });
 
     it('Appointment editor (10)', () => {
-        navToAdmin();
+        cy.loginAsAdmin();
+        cy.wait('@getAppointments');
         appointmentDetails();
 
         cy.get('.edit-popover').click();
@@ -47,7 +69,10 @@ describe('Managing appointments', () => {
     });
 
     it('Editing an appointment (11)', () => {
-        navToAdmin();
+        mockPostRequest('save_appointment', 'saveAppointment');
+
+        cy.loginAsAdmin();
+        cy.wait('@getAppointments');
         appointmentDetails();
         cy.get('.edit-popover').click();
 
@@ -55,12 +80,14 @@ describe('Managing appointments', () => {
         cy.get('#email').clear().type('xfitov00@fit.vutbr.cz');
 
         cy.get('#save-appointment').click();
+        cy.wait('@saveAppointment');
         cy.get('.toast').should('be.visible');
         cy.get('.toast-body').contains('Appointment saved successfully');
     });
 
     it('Required fields highlighted (12)', () => {
-        navToAdmin();
+        cy.loginAsAdmin();
+        cy.wait('@getAppointments');
         appointmentDetails();
         cy.get('.edit-popover').click();
 
@@ -78,7 +105,7 @@ describe('Managing appointments', () => {
     });
 
     it('Closing the appointment details pop-up (13)', () => {
-        navToAdmin();
+        cy.loginAsAdmin();
         appointmentDetails();
 
         cy.get('.close-popover').click();
@@ -86,7 +113,7 @@ describe('Managing appointments', () => {
     });
 
     it('Cancel editing (14)', () => {
-        navToAdmin();
+        cy.loginAsAdmin();
         appointmentDetails();
         cy.get('.edit-popover').click();
 
@@ -99,7 +126,7 @@ describe('Managing appointments', () => {
     });
 
     it('Appointment creator (15)', () => {
-        navToAdmin();
+        cy.loginAsAdmin();
 
         cy.get('.dropdown > .btn').click();
         cy.get('#insert-appointment').click();

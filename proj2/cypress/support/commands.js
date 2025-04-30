@@ -23,3 +23,12 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('loginAsAdmin', () => {
+    cy.visit('http://localhost:8080/index.php/login');
+
+    cy.get('#username').type('admin');
+    cy.get('#password').type('admin123');
+
+    cy.get('#login').click();
+});
