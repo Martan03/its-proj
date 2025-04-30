@@ -24,6 +24,7 @@ describe('Managing appointments', () => {
 
     it('Appointment details (8)', () => {
         cy.loginAsAdmin();
+        cy.wait('@getAppointments');
 
         appointmentDetails();
     });

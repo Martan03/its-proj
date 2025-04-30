@@ -1,0 +1,28 @@
+[
+    {
+        "id": 123,
+        "create_datetime": "2025-03-27 07:14:47",
+        "update_datetime": "2025-03-27 07:28:30",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "johndoe@its.local",
+        "mobile_number": null,
+        "phone_number": "+1 (000) 000-0000",
+        "address": "",
+        "city": "",
+        "state": null,
+        "zip_code": "",
+        "notes": "",
+        "timezone": "UTC",
+        "language": "english",
+        "custom_field_1": null,
+        "custom_field_2": null,
+        "custom_field_3": null,
+        "custom_field_4": null,
+        "custom_field_5": null,
+        "is_private": "0",
+        "ldap_dn": null,
+        "id_roles": 3,
+        "appointments": []
+    }
+]
