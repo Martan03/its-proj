@@ -2,7 +2,7 @@ login=xsleza26
 
 .PHONY: submit
 submit:
-	zip $(login).zip *.feature README.md
+	zip -r $(login).zip report.md cypress.config.js cypress
 
 .PHONY: clean
 clean:
