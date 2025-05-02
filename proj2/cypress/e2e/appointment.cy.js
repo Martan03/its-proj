@@ -155,4 +155,28 @@ describe('Managing appointments', () => {
         cy.get('#email').should('have.value', '');
         cy.get('#phone-number').should('have.value', '');
     });
+
+
+    it('Error message on save appointment API error (27)', () => {
+        cy.intercept('POST', `/index.php/calendar/save_appointment`, {
+            statusCode: 500,
+            body: {
+                success: false,
+                message: 'Internal Server Error'
+            }
+        }).as('saveAppointmentError');
+        cy.loginAsAdmin();
+        cy.wait('@getAppointments');
+
+        appointmentDetails();
+        cy.get('.edit-popover').click();
+
+        cy.get('[data-value="#82e4ec"]').click();
+        cy.get('#email').clear().type('xlogin00@fit.vutbr.cz');
+        cy.get('#save-appointment').click();
+        cy.wait('@saveAppointmentError');
+
+        cy.get('#message-modal').should('be.visible');
+        cy.get('.card-body').contains('Internal Server Error');
+    });
 });

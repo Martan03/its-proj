@@ -125,4 +125,24 @@ describe('Booking an appointment', () => {
             cy.get('#phone-number').should('have.value', data.phone_number);
         });
     });
+
+    it('Error message on booking API error (25)', () => {
+        navToCustomerInfo();
+        fillRequired();
+        cy.get('#button-next-3').click();
+
+        cy.intercept('POST', '/index.php/booking/register', {
+            statusCode: 500,
+            body: {
+                success: false,
+                message: 'Internal Server Error'
+            }
+        }).as('registerError');
+
+        cy.get('#book-appointment-submit').click();
+        cy.wait('@registerError');
+
+        cy.get('#message-modal').should('be.visible');
+        cy.get('.card-body').contains('Internal Server Error');
+    });
 });

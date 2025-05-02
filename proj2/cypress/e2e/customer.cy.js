@@ -173,4 +173,33 @@ describe('Managing customers', () => {
 
         cy.get('.selected > strong').should('not.exist');
     });
+
+    it('Error message on save customer API error (26)', () => {
+        cy.intercept('POST', `/index.php/customers/store`, {
+            statusCode: 500,
+            body: {
+                success: false,
+                message: 'Internal Server Error'
+            }
+        }).as('saveCustomerError');
+        navToAdmin();
+        cy.fixture('customers').then(data => {
+            cy.fixture('customer').then(customer => {
+                data.push(customer);
+                mockGetCustomers(data, 'getCustomersUpdated');
+            })
+        });
+        cy.get('#add-customer').click();
+
+        cy.get('#first-name').type('Joshua');
+        cy.get('#last-name').type('Clarkson');
+        cy.get('#email').type('joshuaclarkson@its.local');
+        cy.get('#phone-number').type('123456789');
+
+        cy.get('#save-customer').click();
+        cy.wait('@saveCustomerError');
+
+        cy.get('#message-modal').should('be.visible');
+        cy.get('.card-body').contains('Internal Server Error');
+    });
 });

@@ -3,6 +3,18 @@
 - **Autor:** Martin Slezák (xsleza26)
 - **Datum:** 2025-04-29
 
+## Přidání testů
+
+Žádné testy nebyly upraveny, byly však přidány testy zobrazení chybové hlášky
+v případě, že API response není v pořádku.
+
+Jedná se o testy:
+| Test name                                        | Cypress file      | Line  |
+|--------------------------------------------------|-------------------|-------|
+| Error message on booking API error (25)          | booking.cy.js     |  129  |
+| Error message on save customer API error (26)    | customer.cy.js    |  177  |
+| Error message on save appointment API error (27) | appointment.cy.js |  160  |
+
 ## Tabulka mapování BDD scénářů na zdrojové kódy
 
 | Scenario file       | Line | Cypress file      | Line |
